@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="english" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 1: 10X Visium dataset (DLPFC) &mdash; GraphPCA 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=013c598b"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial 2: STARmap data (mPFC)" href="Tutorial2_mPFC.html" />
+    <link rel="prev" title="Installation" href="Installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GraphPCA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 1: 10X Visium dataset (DLPFC)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Load-packages">Load packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Setting-parameters">Setting parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocessing">Preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Perform-GraphPCA">Perform GraphPCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Clustering">Clustering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Denosing">Denosing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Coexpression-module">Coexpression module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial2_mPFC.html">Tutorial 2: STARmap data (mPFC)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorial3_Integration.html">Tutorial 3: Multi-sample integration (STARmap)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GraphPCA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial 1: 10X Visium dataset (DLPFC)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Tutorial1_DLPFC.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Tutorial-1:-10X-Visium-dataset-(DLPFC)">
+<h1>Tutorial 1: 10X Visium dataset (DLPFC)<a class="headerlink" href="#Tutorial-1:-10X-Visium-dataset-(DLPFC)" title="Link to this heading"></a></h1>
+<p>Here, we use sample id 151673 from DLPFC dataset to demostrate the performance of GraphPCA. can be downloaded from their original study spatialLIBD(<a class="reference external" href="https://research.libd.org/spatialLIBD/index.html">https://research.libd.org/spatialLIBD/index.html</a>).</p>
+<section id="Load-packages">
+<h2>Load packages<a class="headerlink" href="#Load-packages" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">GraphPCA</span> <span class="k">as</span> <span class="nn">sg</span>
+<span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">import</span> <span class="nn">anndata</span> <span class="k">as</span> <span class="nn">ad</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">squidpy</span> <span class="k">as</span> <span class="nn">sq</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span> <span class="k">as</span> <span class="n">pair</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">adjusted_rand_score</span> <span class="k">as</span> <span class="n">ari_score</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Setting-parameters">
+<h2>Setting parameters<a class="headerlink" href="#Setting-parameters" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;151507&quot;</span><span class="p">,</span> <span class="s2">&quot;151508&quot;</span><span class="p">,</span> <span class="s2">&quot;151509&quot;</span><span class="p">,</span> <span class="s2">&quot;151510&quot;</span><span class="p">,</span> <span class="s2">&quot;151669&quot;</span><span class="p">,</span> <span class="s2">&quot;151670&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;151671&quot;</span><span class="p">,</span> <span class="s2">&quot;151672&quot;</span><span class="p">,</span> <span class="s2">&quot;151673&quot;</span><span class="p">,</span> <span class="s2">&quot;151674&quot;</span><span class="p">,</span> <span class="s2">&quot;151675&quot;</span><span class="p">,</span> <span class="s2">&quot;151676&quot;</span><span class="p">]</span>
+<span class="n">BestK</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="s2">&quot;../../data/DLPFC/&quot;</span>
+<span class="n">save_path</span> <span class="o">=</span> <span class="s2">&quot;../../results/DLPFC/&quot;</span>
+<span class="n">path_GT</span> <span class="o">=</span> <span class="s2">&quot;../../data/DLPFC/groundtruth/SpatialDE_clustering/cluster_labels_&quot;</span>
+<span class="n">sample_id</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">PCA_components</span> <span class="o">=</span> <span class="mi">50</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Preprocessing">
+<h2>Preprocessing<a class="headerlink" href="#Preprocessing" title="Link to this heading"></a></h2>
+<p>Before performing GraphPCA, we assumed that the gene expression counts have already been preprocessed with analytic Pearson residuals proposed by <a class="reference external" href="https://scanpy-tutorials.readthedocs.io/en/latest/tutorial_pearson_residuals.html">Lause et al.</a> and further scaled for each gene to have 0 mean and unit standard deviation. Then, we selected the top 3,000 spatial variable genes using SPARK package.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data_path</span> <span class="o">+</span> <span class="n">samples</span><span class="p">[</span><span class="n">sample_id</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/sample_data.h5ad&quot;</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_genes</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span><span class="n">min_cells</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">normalize_pearson_residuals</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">SVG_list</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;../../results/DLPFC/SpatialPCA_data_preprocess/&quot;</span> <span class="o">+</span> <span class="n">samples</span><span class="p">[</span><span class="n">sample_id</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_SVGs.csv&quot;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[:,</span><span class="n">adata</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">gene_ids</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">SVG_list</span><span class="o">.</span><span class="n">x</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Perform-GraphPCA">
+<h2>Perform GraphPCA<a class="headerlink" href="#Perform-GraphPCA" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">groundtruth</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path_GT</span><span class="o">+</span><span class="n">samples</span><span class="p">[</span><span class="n">sample_id</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">na_filter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">groundtruth</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">groundtruth</span><span class="p">[</span><span class="s2">&quot;ground_truth&quot;</span><span class="p">])</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;groundtruth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groundtruth</span>
+
+<span class="n">x_array</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;array_row&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">y_array</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;array_col&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">location</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_array</span><span class="p">,</span> <span class="n">y_array</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">Z</span><span class="p">,</span><span class="n">W</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">Run_GPCA</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span> <span class="n">n_components</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;knn&quot;</span><span class="p">,</span> <span class="n">platform</span> <span class="o">=</span> <span class="s2">&quot;Visium&quot;</span><span class="p">,</span> <span class="n">_lambda</span> <span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                <span class="n">save_reconstruction</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;GraphPCA&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Z</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(3639, 50)
+</pre></div></div>
+</div>
+</section>
+<section id="Clustering">
+<h2>Clustering<a class="headerlink" href="#Clustering" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimator</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">BestK</span><span class="p">[</span><span class="n">sample_id</span><span class="p">])</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Z</span><span class="p">[:,:])</span>
+<span class="n">lable_pred</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">labels_</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;GPCA_pred&quot;</span><span class="p">]</span><span class="o">=</span> <span class="n">lable_pred</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;GPCA_pred&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;GPCA_pred&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+<span class="n">refined_pred</span><span class="o">=</span><span class="n">sg</span><span class="o">.</span><span class="n">refine</span><span class="p">(</span><span class="n">sample_id</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">pred</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;GPCA_pred&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">dis</span><span class="o">=</span> <span class="n">pair</span><span class="p">(</span><span class="n">location</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;hexagon&quot;</span><span class="p">)</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;GPCA_pred&quot;</span><span class="p">]</span><span class="o">=</span> <span class="n">refined_pred</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;GPCA_pred&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;GPCA_pred&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ari_score</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">GPCA_pred</span><span class="p">,</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">groundtruth</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.5311286908464182
+</pre></div></div>
+</div>
+</section>
+<section id="Visualization">
+<h2>Visualization<a class="headerlink" href="#Visualization" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;groundtruth&quot;</span><span class="p">,</span><span class="s2">&quot;GPCA_pred&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Tutorial1_DLPFC_14_0.png" src="_images/Tutorial1_DLPFC_14_0.png" />
+</div>
+</div>
+</section>
+<section id="Denosing">
+<h2>Denosing<a class="headerlink" href="#Denosing" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 3639 × 3000
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;groundtruth&#39;, &#39;GPCA_pred&#39;
+    var: &#39;gene_ids&#39;, &#39;feature_types&#39;, &#39;genome&#39;, &#39;n_cells&#39;, &#39;mean&#39;, &#39;std&#39;
+    uns: &#39;spatial&#39;, &#39;pearson_residuals_normalization&#39;, &#39;groundtruth_colors&#39;, &#39;GPCA_pred_colors&#39;
+    obsm: &#39;spatial&#39;, &#39;GraphPCA&#39;
+    layers: &#39;GraphPCA_ReX&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ATP2B4&quot;</span><span class="p">,</span><span class="s2">&quot;RASGRF2&quot;</span><span class="p">,</span><span class="s2">&quot;LAMP5&quot;</span><span class="p">,</span><span class="s2">&quot;NEFH&quot;</span><span class="p">,</span><span class="s2">&quot;NTNG2&quot;</span><span class="p">,</span><span class="s2">&quot;B3GALT2&quot;</span><span class="p">],</span>
+                      <span class="n">ncols</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">axis_label</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span><span class="n">colorbar</span> <span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Tutorial1_DLPFC_17_0.png" src="_images/Tutorial1_DLPFC_17_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ATP2B4&quot;</span><span class="p">,</span><span class="s2">&quot;RASGRF2&quot;</span><span class="p">,</span><span class="s2">&quot;LAMP5&quot;</span><span class="p">,</span><span class="s2">&quot;NEFH&quot;</span><span class="p">,</span><span class="s2">&quot;NTNG2&quot;</span><span class="p">,</span><span class="s2">&quot;B3GALT2&quot;</span><span class="p">],</span>
+                      <span class="n">ncols</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">axis_label</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">colorbar</span> <span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">layer</span><span class="o">=</span><span class="s2">&quot;GraphPCA_ReX&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Tutorial1_DLPFC_18_0.png" src="_images/Tutorial1_DLPFC_18_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">groundtruth</span><span class="o">!=</span><span class="s2">&quot;NA&quot;</span><span class="p">,:]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ATP2B4&quot;</span><span class="p">,</span><span class="s2">&quot;RASGRF2&quot;</span><span class="p">,</span><span class="s2">&quot;LAMP5&quot;</span><span class="p">,</span><span class="s2">&quot;NEFH&quot;</span><span class="p">,</span><span class="s2">&quot;NTNG2&quot;</span><span class="p">,</span><span class="s2">&quot;B3GALT2&quot;</span><span class="p">],</span>
+              <span class="n">groupby</span><span class="o">=</span><span class="s1">&#39;groundtruth&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">dendrogram</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">swap_axes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Tutorial1_DLPFC_20_0.png" src="_images/Tutorial1_DLPFC_20_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ATP2B4&quot;</span><span class="p">,</span><span class="s2">&quot;RASGRF2&quot;</span><span class="p">,</span><span class="s2">&quot;LAMP5&quot;</span><span class="p">,</span><span class="s2">&quot;NEFH&quot;</span><span class="p">,</span><span class="s2">&quot;NTNG2&quot;</span><span class="p">,</span><span class="s2">&quot;B3GALT2&quot;</span><span class="p">],</span>
+              <span class="n">groupby</span><span class="o">=</span><span class="s1">&#39;groundtruth&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">dendrogram</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">swap_axes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="n">layer</span><span class="o">=</span><span class="s2">&quot;GraphPCA_ReX&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Tutorial1_DLPFC_21_0.png" src="_images/Tutorial1_DLPFC_21_0.png" />
+</div>
+</div>
+</section>
+<section id="Coexpression-module">
+<h2>Coexpression module<a class="headerlink" href="#Coexpression-module" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">GPCA_pcs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s2">&quot;GraphPCA&quot;</span><span class="p">])</span>
+<span class="n">GPCA_pcs</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">index</span>
+<span class="n">GPCA_pcs</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;PC_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">GPCA_pcs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">,</span><span class="n">GPCA_pcs</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">set_figure_params</span><span class="p">(</span> <span class="n">color_map</span> <span class="o">=</span> <span class="s1">&#39;viridis&#39;</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PC_0&quot;</span><span class="p">,</span><span class="s2">&quot;PC_1&quot;</span><span class="p">,</span><span class="s2">&quot;PC_2&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Tutorial1_DLPFC_26_0.png" class="no-scaled-link" src="_images/Tutorial1_DLPFC_26_0.png" style="width: 1162px; height: 357px;" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">GPCA_w</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+<span class="n">GPCA_w</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span>
+<span class="n">GPCA_w</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;PC_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">GPCA_w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">top_5_rows</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">GPCA_w</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="n">top_5_rows</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">GPCA_w</span><span class="o">.</span><span class="n">nlargest</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sq</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial_scatter</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">top_5_rows</span><span class="p">[</span><span class="s2">&quot;PC_0&quot;</span><span class="p">],</span><span class="n">layer</span><span class="o">=</span><span class="s2">&quot;GraphPCA_ReX&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/Tutorial1_DLPFC_29_0.png" class="no-scaled-link" src="_images/Tutorial1_DLPFC_29_0.png" style="width: 1539px; height: 709px;" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Tutorial2_mPFC.html" class="btn btn-neutral float-right" title="Tutorial 2: STARmap data (mPFC)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Jiyuan Yang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
