@@ -1,5 +1,5 @@
 
 sphinx_rtd_theme
-sphinx>=1.4
+sphinx==7.2.6
 ipykernel
-nbsphinx
+nbsphinx==0.9.3
