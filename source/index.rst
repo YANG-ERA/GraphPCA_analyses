@@ -18,7 +18,8 @@ GraphPCA – a fast and interpretable dimension reduction algorithm for spatial 
    Tutorial1_DLPFC
    Tutorial2_mPFC
    Tutorial3_Integration
-
+   Tutorial4_MSI
+   
 .. image:: ../figures/workflow.png
    :width: 1400
 
