@@ -1,0 +1,10 @@
+{
+  "cells": 3938808,
+  "sections": 59,
+  "genes": 500,
+  "programs": 30,
+  "graph_lambda": 0.5,
+  "sharing_eta": 0.01,
+  "converged": true,
+  "outer_iterations": 63
+}
