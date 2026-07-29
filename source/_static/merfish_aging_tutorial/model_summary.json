@@ -1,0 +1,9 @@
+{
+  "n_cells": 376107,
+  "n_sections": 31,
+  "n_genes": 374,
+  "n_components": 30,
+  "converged": true,
+  "n_iter": 51,
+  "source": "audited eta=0.02 shared-loading MERFISH fit"
+}
