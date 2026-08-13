@@ -3,11 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GraphPCA's documentation!
-====================================
+GraphPCA-Turbo
+==============
 
-GraphPCA – a fast and interpretable dimension reduction algorithm for spatial transcriptomics data.
-=====================================================================================================
+Scalable graph-regularized dimension reduction for million-cell and multi-section spatial transcriptomics via GraphPCA-Turbo
+==============================================================================================================================
 
 
 .. toctree::
@@ -28,8 +28,8 @@ GraphPCA – a fast and interpretable dimension reduction algorithm for spatial 
 
 Overview
 ========
-GraphPCA is a novel graph-constrained, interpretable,
-and quasi-linear dimension-reduction method tailored for spatial transcriptomic data.
+GraphPCA-Turbo is a scalable, graph-regularized and interpretable
+dimension-reduction method for million-cell and multi-section spatial transcriptomic data.
 It leverages the strengths of graphical regularization and Principal Component Analysis (PCA)
 to extract low-dimensional embeddings of spatial transcriptomes that integrate location information in linear time complexity.
 The substantial power boost enabled by GraphPCA fertilizes various downstream tasks of spatial transcriptomics data analyses and
